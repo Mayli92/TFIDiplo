@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken'); // Para verificar el token
 const asyncHandler = require('express-async-handler'); // Para manejar errores asíncronos
-const User = require('../models/UserModel'); // Para buscar al usuario por ID
+const User = require('../models/userModel'); // Para buscar al usuario por ID
 
 /**
  * Middleware para proteger rutas que requieren autenticación (JWT).
