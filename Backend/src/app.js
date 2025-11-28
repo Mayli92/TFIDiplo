@@ -1,6 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const authRoutes = require('./routes/authRoutes');
+const postRoutes = require('./routes/postRoutes');
 
 // Cargar variables de entorno desde el archivo .env
 dotenv.config();
@@ -36,13 +38,17 @@ app.get('/', (req, res) => {
     res.send('API del Trabajo Práctico Integrador funcionando.');
 });
 
-// Ejemplo de cómo se importarían las rutas de las entidades:
-// const userRoutes = require('./routes/userRoutes');
-// app.use('/api/users', userRoutes);
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes); 
+app.use('/api/posts', postRoutes);
 
 
-// 6. MANEJO DE ERRORES (Middleware para capturar errores 404 y generales)
-// app.use(errorHandler); // Se implementará en src/middlewares/errorMiddleware.js
+// 6. MANEJO DE ERRORES (Middlewares de error)
+// Middleware 1: Captura si la URL no coincide con ninguna ruta anterior
+app.use(notFound);
+// Middleware 2: Manejo centralizado de errores
+app.use(errorHandler);
+
 
 // 7. INICIO DEL SERVIDOR
 app.listen(PORT, () => {
