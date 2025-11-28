@@ -4,6 +4,7 @@
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.0.0",
+    "node-fetch": "^3.3.2",
     "winston": "^3.18.3"
   }
 }
