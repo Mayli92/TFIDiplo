@@ -1,6 +1,6 @@
-* Middleware para manejar rutas no encontradas (404 Not Found).
- * Esta función se debe colocar DESPUÉS de todas las rutas definidas en app.js.
- */
+//Middleware para manejar rutas no encontradas (404 Not Found).
+//Esta función se debe colocar DESPUÉS de todas las rutas definidas en app.js.
+
 const notFound = (req, res, next) => {
     // Crea un nuevo objeto Error indicando que la ruta no existe
     const error = new Error(`No Encontrado - ${req.originalUrl}`);
