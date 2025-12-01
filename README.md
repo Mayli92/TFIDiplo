@@ -66,12 +66,19 @@ Utilización obligatoria de useState, useEffect y useContext para la gestión de
 # 💻 Tecnologías Utilizadas
 
 **Base de Datos**: MongoDB (a través de Mongoose)
+
 **Backend:** Node.js, Express.js
+
 **Frontend:** React, Tailwind CSS
+
 **Autenticación:** JWT (JSON Web Tokens)
+
 **Validación:** Express-validator (o similar)
+
 **Routing:** react-router-dom
+
 **Otros:**
+
 **Hosting gratuito**: Despliegue en Vercel para acceso en línea.
 **Git:** Uso de Git para el control de versiones y colaboración (se evaluará el flujo de ramas y merges).
 -----------------------------°°°°---------------------------------
