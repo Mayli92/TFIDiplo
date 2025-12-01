@@ -145,4 +145,4 @@ Olmedo, Nadia.
 
 URL de Despliegue (Frontend): [https://diplowebmern.vercel.app/]
 
-URL de Despliegue (Backend API): [en render o versel]
+URL de Despliegue (Backend API): 
