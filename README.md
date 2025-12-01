@@ -1,6 +1,6 @@
-Proyecto de Programación Web - Plataforma de Gestión MERN
+# Proyecto de Programación Web - Plataforma de Gestión MERN
 
-📄 Descripción
+# 📄 Descripción
 
 Este proyecto es una Plataforma de Gestión de E-commerce desarrollada como Trabajo Práctico Integrador en el marco de la asignatura de Programación Web.
 
@@ -11,8 +11,8 @@ Frontend (Aplicación SPA con React): Una Single Page Application (SPA) construi
 Backend (API RESTful con Node.js/Express): Una API RESTful que gestiona la lógica de negocio, la conexión a la base de datos (MongoDB) y la autenticación de usuarios.
 
 El objetivo es proveer un CRUD completo sobre dos entidades principales y de soporte para simular un sistema transaccional.
---------------------------------------------°°°°-----------------------------------------------
-🛠️ Entidades del Sistema
+----------------------------------°°°°----------------------------------
+# 🛠️ Entidades del Sistema
 
 El proyecto implementa la gestión de las siguientes entidades, cruciales para simular un flujo de E-commerce (Compras en línea):
 
@@ -27,8 +27,8 @@ Es el objeto de la Compra/Orden.
 Compra (Orden)
 Fecha de Compra, Dirección de Envío, Estado (Pendiente, Enviado, Entregado), Total Final, Usuario (referencia), Detalle de Ítems (array de productos/cantidades)
 Uno a Muchos (Usuario a Compra). Contiene los ítems comprados y el estado del envío.
--------------------------------------------°°°°-----------------------------------------------
-🚀 Funcionalidades Principales
+-----------------------------°°°°------------------------------------
+# 🚀 Funcionalidades Principales
 
 Backend (API RESTful)
 
@@ -42,7 +42,7 @@ Módulo de ABMC (CRUD completo):
 
 Endpoints HTTP (GET, POST, PUT, DELETE) para gestionar la Entidad Principal (Producto) y la Entidad de Soporte (Compra).
 
-Listado con paginación en las consultas (GET /api/productos).
+Listado con paginación en las consultas (GET /api/productos)
 
 Validación:
 Implementación de validación de datos de entrada (e.g., usando express-validator) en los endpoints de registro, login y creación/modificación de entidades.
@@ -62,8 +62,8 @@ Uso de react-router-dom para una navegación fluida entre las pantallas sin reca
 
 Uso de Hooks:
 Utilización obligatoria de useState, useEffect y useContext para la gestión de estado, ciclo de vida y estado global de autenticación.
----------------------------------------°°°°----------------------------------------------------
-💻 Tecnologías Utilizadas
+---------------------------°°°°--------------------------------------
+# 💻 Tecnologías Utilizadas
 
 Base de Datos: MongoDB (a través de Mongoose)
 Backend: Node.js, Express.js
@@ -74,8 +74,8 @@ Routing: react-router-dom
 Otros:
 Hosting gratuito: Despliegue en Vercel/Netlify/Render para acceso en línea.
 Git: Uso de Git para el control de versiones y colaboración (se evaluará el flujo de ramas y merges).
-----------------------------------------°°°°--------------------------------------------------
-📁 Estructura del Proyecto
+-----------------------------°°°°---------------------------------
+# 📁 Estructura del Proyecto
 
 El proyecto sigue una arquitectura de capas clara, separando responsabilidades:
 
@@ -102,9 +102,9 @@ El proyecto sigue una arquitectura de capas clara, separando responsabilidades:
     │   └── main.jsx       # Punto de entrada
     └── package.json
 
------------------------------------------°°°°--------------------------------------------------
+----------------------------°°°°---------------------------------
 
-⚙️ Instrucciones de Uso
+# ⚙️ Instrucciones de Uso
 
 Para ejecutar el proyecto en su entorno local, siga los siguientes pasos:
 
@@ -128,15 +128,15 @@ npm start # O el script de inicio definido (e.g., npm run dev)
 API: La API estará disponible en http://localhost:3000 (o el puerto configurado).
 
 Aplicación Web: El frontend estará disponible en http://localhost:5173 (o el puerto que asigne Vite/React).
----------------------------------------°°°°--------------------------------------------------
-👤 Contribuidores
+---------------------------°°°°---------------------------------
+# 👤 Contribuidores
 
 Nombre de los Integrantes
 
 Niripil, Mailen.
 Olmedo, Nadia.
 
-🔗 Enlaces Importantes
+# 🔗 Enlaces Importantes
 
 URL de Despliegue (Frontend): https://diplowebmern.vercel.app/
 
