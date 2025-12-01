@@ -1,13 +1,457 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPI - Auth & Profile SPA</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de React, ReactDOM y Babel (para interpretar JSX en el navegador) -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        /* Fuente Inter de Google */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+    </style>
+</head>
+<body>
+
+<div id="root">
+    <!-- La aplicación React se montará aquí -->
+</div>
+
+<script type="text/babel">
+    const { useState, useEffect, useContext, createContext } = React;
+
+    // ----------------------------------------------------------------------
+    // 1. CONFIGURACIÓN Y SERVICIOS (Simulando authService.js)
+    // ----------------------------------------------------------------------
+
+    // URL base del backend (debe coincidir con el puerto del Canvas index.js, que es 5000)
+    const API_URL = 'http://localhost:3000/api';
+
+    /**
+     * Función genérica para manejar fetch y errores.
+     * @param {string} endpoint - Ejemplo: '/auth/login'
+     * @param {object} options - Opciones de fetch
+     * @returns {Promise<object>}
+     */
+    const apiCall = async (endpoint, options = {}) => {
+        try {
+            const response = await fetch(`${API_URL}${endpoint}`, options);
+            const data = await response.json();
+
+            if (!response.ok) {
+                // Si el backend retorna un error (ej: 400, 401, 500)
+                throw new Error(data.message || 'Error en la petición al servidor.');
+            }
+            return data;
+        } catch (error) {
+            console.error('API Error:', error.message);
+            throw error; // Lanzar el error para que el componente lo maneje
+        }
+    };
+
+    const authService = {
+        login: (email, password) => apiCall('/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        }),
+        
+        register: (username, email, password) => apiCall('/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password }),
+        }),
+
+        getProfile: (token) => apiCall('/users/profile', {
+            method: 'GET',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        }),
+        
+        // Almacenamiento local del token y usuario
+        setAuthData: (data) => {
+            if (data && data.token) {
+                localStorage.setItem('user', JSON.stringify(data));
+            }
+        },
+        getAuthData: () => {
+            const user = localStorage.getItem('user');
+            return user ? JSON.parse(user) : null;
+        },
+        logout: () => {
+            localStorage.removeItem('user');
+        },
+    };
+
+    // ----------------------------------------------------------------------
+    // 2. CONTEXTO DE AUTENTICACIÓN (Simulando AuthContext.jsx)
+    // ----------------------------------------------------------------------
+
+    const AuthContext = createContext(null);
+
+    const AuthProvider = ({ children }) => {
+        // Inicializa el estado de autenticación desde localStorage
+        const initialData = authService.getAuthData();
+        const [user, setUser] = useState(initialData ? initialData.user : null);
+        const [token, setToken] = useState(initialData ? initialData.token : null);
+
+        // Guarda los datos de autenticación y actualiza el estado
+        const login = (userData) => {
+            authService.setAuthData(userData);
+            setUser(userData.user);
+            setToken(userData.token);
+        };
+
+        const logout = () => {
+            authService.logout();
+            setUser(null);
+            setToken(null);
+        };
+
+        const value = {
+            user,
+            token,
+            isAuthenticated: !!token,
+            login,
+            logout,
+        };
+
+        return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    };
+
+    const useAuth = () => useContext(AuthContext);
+
+    // ----------------------------------------------------------------------
+    // 3. COMPONENTES DE PÁGINA (Simulando LoginPage.jsx, RegisterPage.jsx, ProfilePage.jsx)
+    // ----------------------------------------------------------------------
+
+    // Componente de Navegación Simple (para simular Link)
+    const NavLink = ({ to, children }) => (
+        <a href="#" onClick={(e) => { e.preventDefault(); window.navigate(to); }} 
+           className="font-medium text-indigo-600 hover:text-indigo-500 transition duration-150">
+            {children}
+        </a>
+    );
+
+    // Componente de Login
+    const LoginPage = () => {
+        const [formData, setFormData] = useState({ email: '', password: '' });
+        const [isLoading, setIsLoading] = useState(false);
+        const [error, setError] = useState(null);
+        const { login, isAuthenticated } = useAuth();
+
+        useEffect(() => {
+            if (isAuthenticated) {
+                window.navigate('/profile'); // Redirigir si ya está logueado
+            }
+        }, [isAuthenticated]);
+
+        const handleChange = (e) => {
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+            setError(null);
+        };
+
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            setIsLoading(true);
+            setError(null);
+            
+            try {
+                const userData = await authService.login(formData.email, formData.password);
+                login(userData); // Actualiza el contexto y localStorage
+                window.navigate('/profile');
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        return (
+            <AuthFormContainer title="Iniciar Sesión">
+                {error && <ErrorMessage message={error} />}
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                    <InputField name="email" type="email" label="Correo Electrónico" value={formData.email} onChange={handleChange} placeholder="ejemplo@utn.com" />
+                    <InputField name="password" type="password" label="Contraseña" value={formData.password} onChange={handleChange} placeholder="Ingresa tu contraseña" />
+                    <SubmitButton isLoading={isLoading}>Iniciar Sesión</SubmitButton>
+                </form>
+                <div className="text-sm text-center">
+                    ¿No tienes cuenta? <NavLink to="/register">Regístrate aquí.</NavLink>
+                </div>
+            </AuthFormContainer>
+        );
+    };
+
+    // Componente de Registro
+    const RegisterPage = () => {
+        const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '' });
+        const [isLoading, setIsLoading] = useState(false);
+        const [error, setError] = useState(null);
+        const { login, isAuthenticated } = useAuth();
+
+        useEffect(() => {
+            if (isAuthenticated) {
+                window.navigate('/profile');
+            }
+        }, [isAuthenticated]);
+
+        const handleChange = (e) => {
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+            setError(null);
+        };
+
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            const { username, email, password, confirmPassword } = formData;
+
+            if (password !== confirmPassword) {
+                setError('Las contraseñas no coinciden.');
+                return;
+            }
+
+            setIsLoading(true);
+            setError(null);
+
+            try {
+                // El servicio de registro en el backend debería retornar user y token
+                const userData = await authService.register(username, email, password);
+                
+                // NOTA: El servicio de registro del backend debe retornar el token también para login automático
+                // Si solo retorna el usuario, se debe redirigir a /login
+                // Asumimos que el backend retorna { user, token } como el login
+                login(userData); 
+                window.navigate('/profile');
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        return (
+            <AuthFormContainer title="Crear una Cuenta">
+                {error && <ErrorMessage message={error} />}
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                    <InputField name="username" type="text" label="Nombre de Usuario" value={formData.username} onChange={handleChange} placeholder="Tu nombre completo" />
+                    <InputField name="email" type="email" label="Correo Electrónico" value={formData.email} onChange={handleChange} placeholder="ejemplo@utn.com" />
+                    <InputField name="password" type="password" label="Contraseña" value={formData.password} onChange={handleChange} placeholder="Mínimo 6 caracteres" />
+                    <InputField name="confirmPassword" type="password" label="Confirmar Contraseña" value={formData.confirmPassword} onChange={handleChange} placeholder="Repite la contraseña" />
+                    <SubmitButton isLoading={isLoading}>Registrarse</SubmitButton>
+                </form>
+                <div className="text-sm text-center">
+                    ¿Ya tienes cuenta? <NavLink to="/login">Inicia sesión aquí.</NavLink>
+                </div>
+            </AuthFormContainer>
+        );
+    };
+
+    // Componente de Perfil Protegido
+    const ProfilePage = () => {
+        const { user, token, isAuthenticated, logout } = useAuth();
+        const [profileData, setProfileData] = useState(user);
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(null);
+
+        useEffect(() => {
+            if (!isAuthenticated) {
+                window.navigate('/login');
+                return;
+            }
+            
+            // Simulación de fetch al backend para obtener datos frescos (usa el token)
+            const fetchProfile = async () => {
+                setLoading(true);
+                try {
+                    const data = await authService.getProfile(token);
+                    setProfileData(data);
+                } catch (err) {
+                    setError('No se pudo cargar el perfil. El token podría ser inválido.');
+                    logout(); // Forzar logout si el token falla
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchProfile();
+
+        }, [isAuthenticated, token]);
+
+        if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-700">Cargando perfil...</div>;
+        if (error) return <div className="min-h-screen flex items-center justify-center text-red-500">{error}</div>;
+
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+                <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-8 space-y-6">
+                    <h2 className="text-3xl font-extrabold text-gray-900 text-center">
+                        Mi Perfil de Usuario
+                    </h2>
+                    <div className="space-y-4">
+                        <ProfileInfo label="ID de Usuario" value={profileData._id} />
+                        <ProfileInfo label="Nombre de Usuario" value={profileData.username} />
+                        <ProfileInfo label="Correo Electrónico" value={profileData.email} />
+                    </div>
+                    <p className="text-sm text-center text-gray-500 pt-4">
+                        Estos datos fueron recuperados de la ruta protegida 
+                        <code className="bg-gray-200 p-1 rounded text-xs">/api/users/profile</code>
+                        usando el token JWT.
+                    </p>
+                    <button
+                        onClick={logout}
+                        className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150"
+                    >
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
+    // ----------------------------------------------------------------------
+    // 4. COMPONENTES DE UI REUTILIZABLES
+    // ----------------------------------------------------------------------
+
+    const AuthFormContainer = ({ children, title }) => (
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+            <div className="w-full max-w-md bg-white shadow-2xl rounded-xl p-8 space-y-6 transform hover:scale-[1.01] transition duration-300">
+                <h2 className="text-4xl font-black text-gray-900 text-center mb-6">
+                    {title}
+                </h2>
+                {children}
+            </div>
+        </div>
+    );
+
+    const InputField = ({ name, type, label, value, onChange, placeholder }) => (
+        <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1" htmlFor={name}>
+                {label}
+            </label>
+            <input
+                id={name}
+                name={name}
+                type={type}
+                required
+                value={value}
+                onChange={onChange}
+                className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 sm:text-base"
+                placeholder={placeholder}
+            />
+        </div>
+    );
+
+    const SubmitButton = ({ isLoading, children }) => (
+        <button
+            type="submit"
+            disabled={isLoading}
+            className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-bold text-white transition duration-150 ${
+                isLoading ? 'bg-indigo-400 cursor-not-allowed opacity-75' : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+            }`}
+        >
+            {isLoading ? (
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            ) : children}
+        </button>
+    );
+
+    const ErrorMessage = ({ message }) => (
+        <div className="p-4 bg-red-100 text-red-700 border border-red-300 rounded-lg text-sm font-medium animate-pulse">
+            <p><strong>Error:</strong> {message}</p>
+        </div>
+    );
+
+    const ProfileInfo = ({ label, value }) => (
+        <div className="flex justify-between items-center py-2 border-b border-gray-200">
+            <span className="text-gray-500 font-medium">{label}:</span>
+            <span className="text-gray-900 font-semibold truncate">{value}</span>
+        </div>
+    );
+
+
+    // ----------------------------------------------------------------------
+    // 5. COMPONENTE PRINCIPAL (App) Y ENRUTAMIENTO SIMPLE
+    // ----------------------------------------------------------------------
+    
+    // Función simple de enrutamiento basada en el hash de la URL (simula react-router)
+    const useRouter = () => {
+        const [path, setPath] = useState(window.location.hash.slice(1) || '/');
+
+        useEffect(() => {
+            const handleHashChange = () => setPath(window.location.hash.slice(1) || '/');
+            window.addEventListener('hashchange', handleHashChange);
+            return () => window.removeEventListener('hashchange', handleHashChange);
+        }, []);
+        
+        window.navigate = (newPath) => {
+            window.location.hash = newPath;
+            setPath(newPath);
+        };
+
+        return path;
+    };
+
+    const App = () => {
+        const path = useRouter();
+        
+        const renderRoute = () => {
+            switch (path) {
+                case '/register':
+                    return <RegisterPage />;
+                case '/login':
+                    return <LoginPage />;
+                case '/profile':
+                    return <ProfilePage />;
+                case '/':
+                default:
+                    // Redirigir por defecto al perfil si está autenticado, sino al login
+                    const storedUser = authService.getAuthData();
+                    if (storedUser) {
+                        return <ProfilePage />;
+                    }
+                    return <LoginPage />;
+            }
+        };
+
+        return (
+            <AuthProvider>
+                {/* Cabecera simple */}
+                <header className="bg-white shadow-md">
+                    <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                        <h1 className="text-xl font-bold text-gray-800">TPI MERN App</h1>
+                        <nav className="space-x-4">
+                            <NavLink to="/login">Login</NavLink>
+                            <NavLink to="/register">Registro</NavLink>
+                            <NavLink to="/profile">Perfil</NavLink>
+                        </nav>
+                    </div>
+                </header>
+                <main>
+                    {renderRoute()}
+                </main>
+            </AuthProvider>
+        );
+    };
+
+    // ----------------------------------------------------------------------
+    // 6. MONTAJE DE LA APLICACIÓN
+    // ----------------------------------------------------------------------
+
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<App />);
+
+</script>
+
+</body>
 </html>
