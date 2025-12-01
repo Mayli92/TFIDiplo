@@ -65,42 +65,61 @@ Utilización obligatoria de useState, useEffect y useContext para la gestión de
 ---------------------------°°°°--------------------------------------
 # 💻 Tecnologías Utilizadas
 
-Base de Datos: MongoDB (a través de Mongoose)
-Backend: Node.js, Express.js
-Frontend: React, Tailwind CSS
-Autenticación: JWT (JSON Web Tokens)
-Validación: Express-validator (o similar)
-Routing: react-router-dom
-Otros:
-Hosting gratuito: Despliegue en Vercel/Netlify/Render para acceso en línea.
-Git: Uso de Git para el control de versiones y colaboración (se evaluará el flujo de ramas y merges).
+**Base de Datos**: MongoDB (a través de Mongoose)
+**Backend:** Node.js, Express.js
+**Frontend:** React, Tailwind CSS
+**Autenticación:** JWT (JSON Web Tokens)
+**Validación:** Express-validator (o similar)
+**Routing:** react-router-dom
+**Otros:**
+**Hosting gratuito**: Despliegue en Vercel para acceso en línea.
+**Git:** Uso de Git para el control de versiones y colaboración (se evaluará el flujo de ramas y merges).
 -----------------------------°°°°---------------------------------
 # 📁 Estructura del Proyecto
 
 El proyecto sigue una arquitectura de capas clara, separando responsabilidades:
 
-/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/   # Lógica de manejo de peticiones
-│   │   ├── models/        # Esquemas de la base de datos (Mongoose)
-│   │   ├── routes/        # Definición de endpoints
-│   │   ├── services/      # Lógica de negocio pura
-│   │   ├── middlewares/   # JWT, errores, validación
-│   │   ├── config/        # Configuración de DB y Logger
-│   │   └── app.js         # Configuración principal de Express
-│   └── package.json
-└── frontend/
-    ├── src/
-    │   ├── assets/        # Archivos estáticos
-    │   ├── components/    # Componentes React reutilizables
-    │   ├── hooks/         # Custom Hooks (useAuth, useFetch, etc.)
-    │   ├── pages/         # Componentes para cada ruta/pantalla
-    │   ├── services/      # Lógica de conexión a APIs (e.g., apiService.js)
-    │   ├── utils/         # Funciones auxiliares
-    │   ├── App.jsx        # Componente principal
-    │   └── main.jsx       # Punto de entrada
-    └── package.json
+> ├── backend/
+> 
+> │   ├── src/
+> 
+> │   │   ├── controllers/   # Lógica de manejo de peticiones
+> 
+> │   │   ├── models/        # Esquemas de la base de datos (Mongoose)
+> 
+> │   │   ├── routes/        # Definición de endpoints
+> 
+> │   │   ├── services/      # Lógica de negocio pura
+> 
+> │   │   ├── middlewares/   # JWT, errores, validación
+> 
+> │   │   ├── config/        # Configuración de DB y Logger
+> 
+> │   │   └── app.js         # Configuración principal de Express
+> 
+> │   └── package.json
+> 
+> └── frontend/
+> 
+>     ├── src/
+> 
+>     │   ├── assets/        # Archivos estáticos
+> 
+>     │   ├── components/    # Componentes React reutilizables
+> 
+>     │   ├── hooks/         # Custom Hooks (useAuth, useFetch, etc.)
+> 
+>     │   ├── pages/         # Componentes para cada ruta/pantalla
+> 
+>     │   ├── services/      # Lógica de conexión a APIs (e.g., apiService.js)
+> 
+>     │   ├── utils/         # Funciones auxiliares
+> 
+>     │   ├── App.jsx        # Componente principal
+> 
+>     │   └── main.jsx       # Punto de entrada
+> 
+>     └── package.json
 
 ----------------------------°°°°---------------------------------
 
@@ -108,22 +127,22 @@ El proyecto sigue una arquitectura de capas clara, separando responsabilidades:
 
 Para ejecutar el proyecto en su entorno local, siga los siguientes pasos:
 
-1. Clonar el Repositorio
+### 1. Clonar el Repositorio
 git clone https://github.com/Mayli92/TFIDiplo.git
 cd [TFIDiplo]
 
-2. Configurar el Backend
+### 2. Configurar el Backend
 cd backend
 npm install
-# Crear un archivo .env con las variables de entorno (PORT, MONGO_URI, JWT_SECRET, etc.)
+Crear un archivo .env con las variables de entorno (PORT, MONGO_URI, JWT_SECRET, etc.)
 npm start # O el script de inicio definido (e.g., npm run dev)
-3. Configurar el Frontend
+### 3. Configurar el Frontend
 
 cd ../frontend
 npm install
-# Asegurarse de configurar la URL del backend si es necesario (ej: en el archivo .env o config)
+Asegurarse de configurar la URL del backend si es necesario (ej: en el archivo .env o config)
 npm start # O el script de inicio definido (e.g., npm run dev)
-4. Acceder
+### 4. Acceder
 
 API: La API estará disponible en http://localhost:3000 (o el puerto configurado).
 
